@@ -18,8 +18,6 @@
 #include "services/battery/battery.h"
 #include "sclib/alarms/alarms.h"
 #include "peripherials/thermocouple_spi/thermocouple_spi.h"
-#include "peripherials/pt100_spi/pt100_spi.h" // Include per PT100
-#include "regulators/temperature/temperature.h"
 
 #include "driver/gpio.h"
 
@@ -43,8 +41,8 @@ void setup() {
   mqtt_setup();
   sclib_init();
   led_setup();
+  thermocouple_init();
   //battery_setup();
-  temperature_setup();
 }
 
 
@@ -54,7 +52,8 @@ void loop() {
   //battery_loop(&PLC.BatteryLevel);
   mqtt_updHMI(false);
   check_alarms();
-  temperature_loop();
+  float temperature = thermocouple_read_temperature();
+  sclib_writeSetAct(&PLC.Temperature, temperature);
   
   // Funzione di lettura temperatura PT100 (cached, aggiornata ogni 100ms)
   // float temperature = get_pt100_temperature_cached();
@@ -117,7 +116,6 @@ void interrupt_task(void *arg) {
 
 void interrupt() {
   // Interrupt calls
-  temperature_interrupt();
 }
 
 void app_main(void) {

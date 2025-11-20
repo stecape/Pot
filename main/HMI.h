@@ -64,71 +64,21 @@ typedef struct {
 	bool Q;
 } Alarm;
 
-typedef struct {
-	float Error;
-	Set kP;
-	Set Gp;
-	Set Ti;
-	Set Td;
-	float Correction;
-	Set PidMin;
-	Set PidMax;
-	float PidOut;
-	float Reference;
-	float RawOut;
-	Set OutMin;
-	Set OutMax;
-	float Out;
-	float kpError;
-	float ProportionalCorrection;
-	float IntegralCorrection;
-	float DerivativeCorrection;
-	float OutSat;
-	Set OutGradient;
-	Set SetpointGradient;
-	Set Taw;
-	float AntiWindupContribute;
-	float Set;
-	float Act;
-	float ManualRef;
-	bool ManualMode;
-	bool Stop;
-} PID;
 
 typedef struct {
-	Set _0;
-	Set _1;
-	Set _2;
-	Set _3;
-	Set _4;
-	Set _5;
-} DataSet;
-
-typedef struct {
-	DataSet Times;
-	DataSet Values;
-	Act Output;
-} Interpolation;
-
-
-typedef struct {
-	LogicSelection Heating;
-	LogicSelection Mode;
-	Set PowerReference;
-	Set TemperatureReference;
-	Interpolation Profile;
-	PID PID;
-	Act ActualTemperature;
-	Act ActualPower;
+	Act Temperature;
+	Act Moisture;
+	Act Light;
+	Act BatteryLevel;
 } _HMI;
 
 extern _HMI HMI;
 extern _HMI PLC;
 
-extern int id[185];
-extern int type[185];
-extern void *HMI_pointer[185];
-extern void *PLC_pointer[185];
+extern int id[20];
+extern int type[20];
+extern void *HMI_pointer[20];
+extern void *PLC_pointer[20];
 
 #endif
   

@@ -30,11 +30,11 @@ void led_loop(){
   //gpio_set_level(GPIO_NUM_13, inLevel); //Original behavior before HMI
 
   //Led is controlled by HMI
-  if (PLC.Heating.Status == 2){
+  /*if (PLC.Heating.Status == 2){
     gpio_set_level(GPIO_NUM_13, true);
   } else {
     gpio_set_level(GPIO_NUM_13, false);
-  }
+  }*/
 }
 
 void led_interrupt(){

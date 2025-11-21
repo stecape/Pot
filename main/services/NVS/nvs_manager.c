@@ -30,9 +30,9 @@ esp_err_t nvs_manager_init() {
 }
 
 // Funzione per leggere un valore int dalla NVS
-esp_err_t nvs_manager_get_int(int key, int *value) {
+esp_err_t nvs_manager_get_int(uint64_t key, int *value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     nvs_handle_t handle;
     esp_err_t err = nvs_open_from_partition(NVS_PARTITION_NAME, NVS_NAMESPACE, NVS_READONLY, &handle);
@@ -58,9 +58,9 @@ esp_err_t nvs_manager_get_int(int key, int *value) {
 }
 
 // Funzione per scrivere un valore int nella NVS
-esp_err_t nvs_manager_set_int(int key, int value) {
+esp_err_t nvs_manager_set_int(uint64_t key, int value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     int current_value;
     esp_err_t err = nvs_manager_get_int(key, &current_value);
@@ -90,9 +90,9 @@ esp_err_t nvs_manager_set_int(int key, int value) {
 }
 
 // Funzione per leggere un valore bool dalla NVS
-esp_err_t nvs_manager_get_bool(int key, bool *value) {
+esp_err_t nvs_manager_get_bool(uint64_t key, bool *value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     int temp;
     esp_err_t err = nvs_manager_get_int(key, &temp);
@@ -106,9 +106,9 @@ esp_err_t nvs_manager_get_bool(int key, bool *value) {
 }
 
 // Funzione per scrivere un valore bool nella NVS
-esp_err_t nvs_manager_set_bool(int key, bool value) {
+esp_err_t nvs_manager_set_bool(uint64_t key, bool value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     bool current_value;
     esp_err_t err = nvs_manager_get_bool(key, &current_value);
@@ -121,9 +121,9 @@ esp_err_t nvs_manager_set_bool(int key, bool value) {
 }
 
 // Funzione per scrivere un valore float nella NVS
-esp_err_t nvs_manager_set_float(int key, float value) {
+esp_err_t nvs_manager_set_float(uint64_t key, float value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     float current_value;
     esp_err_t err = nvs_manager_get_float(key, &current_value);
@@ -154,9 +154,9 @@ esp_err_t nvs_manager_set_float(int key, float value) {
 }
 
 // Funzione per leggere un valore float dalla NVS
-esp_err_t nvs_manager_get_float(int key, float *value) {
+esp_err_t nvs_manager_get_float(uint64_t key, float *value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     nvs_handle_t handle;
     esp_err_t err = nvs_open_from_partition(NVS_PARTITION_NAME, NVS_NAMESPACE, NVS_READONLY, &handle);
@@ -181,9 +181,9 @@ esp_err_t nvs_manager_get_float(int key, float *value) {
 }
 
 // Funzione per scrivere un valore timestamp nella NVS
-esp_err_t nvs_manager_set_timestamp(int key, time_t value) {
+esp_err_t nvs_manager_set_timestamp(uint64_t key, time_t value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     time_t current_value;
     esp_err_t err = nvs_manager_get_timestamp(key, &current_value);
@@ -212,9 +212,9 @@ esp_err_t nvs_manager_set_timestamp(int key, time_t value) {
 }
 
 // Funzione per leggere un valore timestamp dalla NVS
-esp_err_t nvs_manager_get_timestamp(int key, time_t *value) {
+esp_err_t nvs_manager_get_timestamp(uint64_t key, time_t *value) {
     char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+    snprintf(key_str, sizeof(key_str), "%llx", key); // Convert key to hex string
 
     nvs_handle_t handle;
     esp_err_t err = nvs_open_from_partition(NVS_PARTITION_NAME, NVS_NAMESPACE, NVS_READONLY, &handle);
@@ -239,9 +239,9 @@ esp_err_t nvs_manager_get_timestamp(int key, time_t *value) {
 }
 
 // Funzione per scrivere un valore string nella NVS
-esp_err_t nvs_manager_set_string(int key, const char *value) {
-    char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+esp_err_t nvs_manager_set_string(uint64_t key, const char *value) {
+    char key_str[22];
+    snprintf(key_str, sizeof(key_str), "%llu", key); // Convert key to string
 
     char current_value[128]; // Buffer temporaneo per confrontare la stringa
     esp_err_t err = nvs_manager_get_string(key, current_value, sizeof(current_value));
@@ -270,9 +270,9 @@ esp_err_t nvs_manager_set_string(int key, const char *value) {
 }
 
 // Funzione per leggere un valore string dalla NVS
-esp_err_t nvs_manager_get_string(int key, char *value, size_t max_len) {
-    char key_str[16];
-    snprintf(key_str, sizeof(key_str), "%d", key); // Convert key to string
+esp_err_t nvs_manager_get_string(uint64_t key, char *value, size_t max_len) {
+    char key_str[22];
+    snprintf(key_str, sizeof(key_str), "%llu", key); // Convert key to string
 
     nvs_handle_t handle;
     esp_err_t err = nvs_open_from_partition(NVS_PARTITION_NAME, NVS_NAMESPACE, NVS_READONLY, &handle);

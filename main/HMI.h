@@ -4,6 +4,7 @@
 
 #include "time.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 #define REAL 1
 #define INT 3
@@ -64,21 +65,32 @@ typedef struct {
 	bool Q;
 } Alarm;
 
+typedef struct {
+	Alarm LowWaterLevel;
+	Alarm LowLight;
+	Alarm LowBattery;
+	Alarm HighMoisture;
+	Alarm LowMoisture;
+} PotFaults;
+
 
 typedef struct {
 	Act Temperature;
-	Act Moisture;
-	Act Light;
+	SetAct Moisture;
+	LogicStatus Watering;
+	Act WaterLevel;
+	SetAct Light;
 	Act BatteryLevel;
+	PotFaults Faults;
 } _HMI;
 
 extern _HMI HMI;
 extern _HMI PLC;
 
-extern int id[20];
-extern int type[20];
-extern void *HMI_pointer[20];
-extern void *PLC_pointer[20];
+extern uint64_t id[52];
+extern int type[52];
+extern void *HMI_pointer[52];
+extern void *PLC_pointer[52];
 
 #endif
   

@@ -148,10 +148,10 @@ static void mqtt_receive(esp_mqtt_event_handle_t event){
     }
     
     
-    int id_value = id_json->valueint;
+    uint64_t id_value = id_json->valueint;
     double value = value_json->valuedouble;
     
-    ESP_LOGI(TAG, "Received ID: %d", id_value);
+    ESP_LOGI(TAG, "Received ID: %llu", id_value);
     ESP_LOGI(TAG, "Received Value: %f", value);
 
     // System call: ID = 0
@@ -182,9 +182,9 @@ static void mqtt_receive(esp_mqtt_event_handle_t event){
                     if (cJSON_IsString(value_json)) {
                         strncpy((char *)HMI_pointer[i], value_json->valuestring, 256);
                         strncpy((char *)PLC_pointer[i], value_json->valuestring, 256);
-                        //ESP_LOGI(TAG, "Updated STRING value for ID %d: %s", id[i], value_json->valuestring);
+                        //ESP_LOGI(TAG, "Updated STRING value for ID %llu: %s", id[i], value_json->valuestring);
                     } else {
-                        ESP_LOGE(TAG, "Invalid STRING value for ID %d", id[i]);
+                        ESP_LOGE(TAG, "Invalid STRING value for ID %llu", id[i]);
                     }
                     break;
                 case TIMESTAMP:
@@ -192,9 +192,9 @@ static void mqtt_receive(esp_mqtt_event_handle_t event){
                     if (cJSON_IsNumber(value_json)) {
                         *(time_t *)HMI_pointer[i] = (time_t)value_json->valuedouble;
                         *(time_t *)PLC_pointer[i] = (time_t)value_json->valuedouble;
-                        //ESP_LOGI(TAG, "Updated TIMESTAMP value for ID %d: %lld", id[i], (int64_t)value_json->valuedouble);
+                        //ESP_LOGI(TAG, "Updated TIMESTAMP value for ID %llu: %lld", id[i], (int64_t)value_json->valuedouble);
                     } else {
-                        ESP_LOGE(TAG, "Invalid TIMESTAMP value for ID %d", id[i]);
+                        ESP_LOGE(TAG, "Invalid TIMESTAMP value for ID %llu", id[i]);
                     }
                     break;
                 default:

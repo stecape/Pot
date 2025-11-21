@@ -52,8 +52,8 @@ void loop() {
   //battery_loop(&PLC.BatteryLevel);
   mqtt_updHMI(false);
   check_alarms();
-  float temperature = thermocouple_read_temperature();
-  sclib_writeSetAct(&PLC.Temperature, temperature);
+  float temperature = 24.0;//thermocouple_read_temperature();
+  sclib_writeAct(&PLC.Temperature, temperature);
   
   // Funzione di lettura temperatura PT100 (cached, aggiornata ogni 100ms)
   // float temperature = get_pt100_temperature_cached();

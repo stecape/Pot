@@ -148,7 +148,7 @@ static void mqtt_receive(esp_mqtt_event_handle_t event){
     }
     
     
-    uint64_t id_value = id_json->valueint;
+    uint64_t id_value = (uint64_t)id_json->valuedouble;
     double value = value_json->valuedouble;
     
     ESP_LOGI(TAG, "Received ID: %llu", id_value);

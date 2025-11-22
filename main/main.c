@@ -17,17 +17,14 @@
 #include "services/NVS/nvs_manager.h"
 #include "services/battery/battery.h"
 #include "sclib/alarms/alarms.h"
-#include "peripherials/thermocouple_spi/thermocouple_spi.h"
-
-#include "driver/gpio.h"
+#include "peripherials/sclibDS18B20/sclibDS18B20.h"
+#include "peripherials/moisture/moisture.h"
 
 void interrupt(void); // Prototipo per evitare implicit declaration
 
 #define CONFIG_INTERRUPT_CYCLE_TIME_S 0.25
 
 static TaskHandle_t task_handle = NULL;
-
-int test = 0;
 
 void setup() {
   // Setup calls
@@ -41,8 +38,9 @@ void setup() {
   mqtt_setup();
   sclib_init();
   led_setup();
-  thermocouple_init();
+  ds18b20_init();
   //battery_setup();
+  moisture_init();
 }
 
 
@@ -52,25 +50,39 @@ void loop() {
   //battery_loop(&PLC.BatteryLevel);
   mqtt_updHMI(false);
   check_alarms();
-  float temperature = 24.0;//thermocouple_read_temperature();
+  float temperature;
+  ds18b20_read_temperature(&temperature);
   sclib_writeAct(&PLC.Temperature, temperature);
-  
-  // Funzione di lettura temperatura PT100 (cached, aggiornata ogni 100ms)
-  // float temperature = get_pt100_temperature_cached();
-  // sclib_writeSetAct(&PLC.Temperature, temperature);
-
-  //static int prev_hmi_status = -1;
-  //if (HMI.Light.Status != prev_hmi_status) {
-  //  prev_hmi_status = HMI.Light.Status;
-    // if (pt100_dev) {
-    //   max31865_rtd_config_t rtd_cfg = { .ref = 430.0f, .nominal = 100.0f };
-    //   float temperature = get_pt100_temperature(pt100_dev, rtd_cfg);
-    //   sclib_writeSetAct(&PLC.Temperature, temperature);
-    //   ESP_LOGI("PT100-ONE-SHOT", "Temperatura PT100 aggiornata su cambio HMI.Light.Status: %.2f°C", temperature);
-    // }
-  //}
+  sclib_Set(&PLC.Moisture.AnalogicMin, 0, 0, 0);
+  sclib_Set(&PLC.Moisture.AnalogicMax, 0, 0, 0);
+  sclib_SetAct(&PLC.Moisture.Moisture, 0, 0, 0);
+  float moisture = read_moisture_level(PLC.Moisture.AnalogicMin.Set.Value, PLC.Moisture.AnalogicMax.Set.Value);
+  sclib_writeSetAct(&PLC.Moisture.Moisture, moisture);
+  float moistureAnalogic = read_moisture_analogic();
+  sclib_writeAct(&PLC.Moisture.AnalogicRead, moistureAnalogic);
+  PLC.Temperature.Limit.Min = -40;
+  PLC.Temperature.Limit.Max = 50;
+  alarm(&PLC.Faults.LowMoisture, PLC.Moisture.Moisture.Act.HMIValue<PLC.Moisture.Moisture.Set.Value, ALARM_REACTION_FAULT);
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Definizione della ISR del timer
 bool IRAM_ATTR timer_isr_callback(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx) {

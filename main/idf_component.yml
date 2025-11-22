@@ -1,5 +1,7 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/onewire_bus: "^1.0.4"
+  espressif/ds18b20: "^0.2.0"
   espressif/qrcode: ^0.1.0~2
   ## Required IDF version
   idf:

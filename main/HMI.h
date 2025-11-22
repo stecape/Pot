@@ -73,10 +73,17 @@ typedef struct {
 	Alarm LowMoisture;
 } PotFaults;
 
+typedef struct {
+	SetAct Moisture;
+	Act AnalogicRead;
+	Set AnalogicMin;
+	Set AnalogicMax;
+} Moisture;
+
 
 typedef struct {
 	Act Temperature;
-	SetAct Moisture;
+	Moisture Moisture;
 	LogicStatus Watering;
 	Act WaterLevel;
 	SetAct Light;
@@ -87,10 +94,10 @@ typedef struct {
 extern _HMI HMI;
 extern _HMI PLC;
 
-extern uint64_t id[52];
-extern int type[52];
-extern void *HMI_pointer[52];
-extern void *PLC_pointer[52];
+extern uint64_t id[69];
+extern int type[69];
+extern void *HMI_pointer[69];
+extern void *PLC_pointer[69];
 
 #endif
   

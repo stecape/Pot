@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(ESP32TEMPLATE)
+project(POT)
 
 # Custom target to erase the hmi partition
 add_custom_target(erase_hmi_partition

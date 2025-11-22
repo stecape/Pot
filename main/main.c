@@ -18,11 +18,18 @@
 #include "services/battery/battery.h"
 #include "sclib/alarms/alarms.h"
 #include "peripherials/sclibDS18B20/sclibDS18B20.h"
-#include "peripherials/moisture/moisture.h"
+#include "peripherials/analogInput/analogInput.h"
+#include "sclib/helpers/sclib_helpers.h"
 
 void interrupt(void); // Prototipo per evitare implicit declaration
 
 #define CONFIG_INTERRUPT_CYCLE_TIME_S 0.25
+
+// Configurazione moisture su GPIO 39 (ADC1 CH3)
+#define MOISTURE_ADC_UNIT      ADC_UNIT_1
+#define MOISTURE_ADC_CHANNEL   ADC_CHANNEL_3
+#define LIGHT_ADC_UNIT      ADC_UNIT_1
+#define LIGHT_ADC_CHANNEL   ADC_CHANNEL_0
 
 static TaskHandle_t task_handle = NULL;
 
@@ -40,7 +47,8 @@ void setup() {
   led_setup();
   ds18b20_init();
   //battery_setup();
-  moisture_init();
+  analog_input_init(MOISTURE_ADC_UNIT, MOISTURE_ADC_CHANNEL, ADC_ATTEN_DB_6);
+  analog_input_init(LIGHT_ADC_UNIT, LIGHT_ADC_CHANNEL, ADC_ATTEN_DB_12);
 }
 
 
@@ -56,13 +64,28 @@ void loop() {
   sclib_Set(&PLC.Moisture.AnalogicMin, 0, 0, 0);
   sclib_Set(&PLC.Moisture.AnalogicMax, 0, 0, 0);
   sclib_SetAct(&PLC.Moisture.Moisture, 0, 0, 0);
-  float moisture = read_moisture_level(PLC.Moisture.AnalogicMin.Set.Value, PLC.Moisture.AnalogicMax.Set.Value);
+  sclib_SetAct(&PLC.Light, 0, 0, 0);
+  float moistureAnalogic = read_analog_input(MOISTURE_ADC_UNIT, MOISTURE_ADC_CHANNEL);
+  float moisture = mapf(moistureAnalogic, PLC.Moisture.AnalogicMin.Set.Value, PLC.Moisture.AnalogicMax.Set.Value, 0.0f, 100.0f, true);
+  float lightAnalogic = read_analog_input(LIGHT_ADC_UNIT, LIGHT_ADC_CHANNEL);
+  float light = mapf(lightAnalogic, 3.1f, 0.0f, 0.0f, 100.0f, true);
   sclib_writeSetAct(&PLC.Moisture.Moisture, moisture);
-  float moistureAnalogic = read_moisture_analogic();
   sclib_writeAct(&PLC.Moisture.AnalogicRead, moistureAnalogic);
+  sclib_writeSetAct(&PLC.Light, light);
+  PLC.Moisture.AnalogicMin.Limit.Min = 0;
+  PLC.Moisture.AnalogicMin.Limit.Max = 3.301;
+  PLC.Moisture.AnalogicMax.Limit.Min = 0;
+  PLC.Moisture.AnalogicMax.Limit.Max = 3.301;
+  PLC.Moisture.AnalogicRead.Limit.Min = 0;
+  PLC.Moisture.AnalogicRead.Limit.Max = 2.5;
+  PLC.Moisture.AnalogicRead.Decimals = 3;
   PLC.Temperature.Limit.Min = -40;
   PLC.Temperature.Limit.Max = 50;
+  PLC.Light.Limit.Min = 0;
+  PLC.Light.Limit.Max = 100;
+  PLC.Light.Decimals = 1;
   alarm(&PLC.Faults.LowMoisture, PLC.Moisture.Moisture.Act.HMIValue<PLC.Moisture.Moisture.Set.Value, ALARM_REACTION_FAULT);
+  alarm(&PLC.Faults.LowLight, PLC.Light.Act.HMIValue<PLC.Light.Set.Value, ALARM_REACTION_FAULT);
 
 }
 
